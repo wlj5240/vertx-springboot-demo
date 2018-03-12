@@ -1,0 +1,32 @@
+################### Vert.x Configuration ##########################
+vertx:
+  worker:
+    pool:
+      size: 60
+  springWorker:
+    instances: 30
+
+#hsqldb
+#jdbcUrl:  jdbc:hsqldb:mem:test?shutdown=true
+#driverClassName:  org.hsqldb.jdbcDriver
+#username: SA
+#password:
+#maximumPoolSize: 100
+################### DataSource Configuration ##########################
+spring:
+  datasource:
+    hikari:
+      jdbc-url: jdbc:hsqldb:mem:test?shutdown=true
+      driver-class-name: org.hsqldb.jdbcDriver
+      username: SA
+      password:
+      maximum-pool-size: 120
+    type: com.zaxxer.hikari.HikariDataSource
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+
+
