@@ -16,6 +16,7 @@
 
 package io.example.vertx;
 
+import io.example.service.AuthorAsyncService;
 import io.example.service.BookAsyncService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -30,7 +31,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 
 /**
  * A worker verticle, exposing the {@link BookAsyncService} over the event bus.
- *
+ * <p>
  * Since it is a worker verticle, it is perfectly fine for the registered service to delegate calls to backend Spring beans.
  *
  * @author Thomas Segismont
@@ -39,21 +40,33 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 // Prototype scope is needed as multiple instances of this verticle will be deployed
 @Scope(SCOPE_PROTOTYPE)
 public class SpringWorker extends AbstractVerticle {
-  private static final Logger logger = LoggerFactory.getLogger(SpringWorker.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpringWorker.class);
 
-  @Autowired
-  BookAsyncService bookAsyncService;
+    @Autowired
+    private BookAsyncService bookAsyncService;
 
-  @Override
-  public void start(Future<Void> startFuture) throws Exception {
-    new ServiceBinder(vertx).setAddress(BookAsyncService.ADDRESS).register(BookAsyncService.class, bookAsyncService).completionHandler(ar ->{
-      if (ar.succeeded()) {
-        logger.info("SpringWorker started");
-        startFuture.complete();
-      } else {
-        startFuture.fail(ar.cause());
-      }
-    });
-  }
+    @Autowired
+    private AuthorAsyncService authorAsyncService;
+
+    @Override
+    public void start(Future<Void> startFuture) throws Exception {
+        ServiceBinder binder = new ServiceBinder(vertx);
+        Future<Void> bookFuture = Future.future();
+        binder.setAddress(BookAsyncService.ADDRESS).register(BookAsyncService.class, bookAsyncService)
+                .completionHandler(bookFuture);
+        bookFuture.compose(x -> {
+            Future<Void> authorFuture = Future.future();
+            binder.setAddress(AuthorAsyncService.ADDRESS).register(AuthorAsyncService.class, authorAsyncService).completionHandler(authorFuture);
+            return authorFuture;
+        }).setHandler(ar -> {
+            if (ar.succeeded()) {
+                logger.info("Async services registered");
+                startFuture.complete();
+            } else {
+                logger.error(ar.cause().getMessage());
+                startFuture.fail(ar.cause());
+            }
+        });
+    }
 
 }

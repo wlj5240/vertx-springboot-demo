@@ -20,7 +20,7 @@ spring:
       driver-class-name: org.hsqldb.jdbcDriver
       username: SA
       password:
-      maximum-pool-size: 120
+      maximum-pool-size: 100
     type: com.zaxxer.hikari.HikariDataSource
   jpa:
     hibernate:

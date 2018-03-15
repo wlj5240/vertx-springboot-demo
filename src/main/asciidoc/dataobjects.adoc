@@ -1,10 +1,10 @@
 = Cheatsheets
 
-[[Book]]
-== Book
+[[Author]]
+== Author
 
 ++++
- A book JPA entity.
+ Created by XHD on 2018/3/15.
 ++++
 '''
 
@@ -12,7 +12,7 @@
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[id]]`id`|`Number (Long)`|-
+|[[id]]`id`|`Number (long)`|-
 |[[name]]`name`|`String`|-
 |===
 

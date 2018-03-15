@@ -19,7 +19,7 @@
  *
  * @author Thomas Segismont
  */
-@ModuleGen(name = "example", groupPackage = "io.example.entity")
-package io.example.entity;
+@ModuleGen(name = "example", groupPackage = "io.example")
+package io.example;
 
 import io.vertx.codegen.annotations.ModuleGen;

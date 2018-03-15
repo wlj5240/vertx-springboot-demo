@@ -14,9 +14,11 @@
  * under the License.
  */
 
-package io.example.service;
+package io.example.service.impl;
 
 import io.example.entity.Book;
+import io.example.service.BookAsyncService;
+import io.example.service.BookService;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

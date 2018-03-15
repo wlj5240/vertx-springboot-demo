@@ -1,6 +1,6 @@
 package io.example;
 
-import io.example.routers.BookRestApi;
+import io.example.web.RestApi;
 import io.example.vertx.SpringVerticleFactory;
 import io.example.vertx.SpringWorker;
 import io.vertx.core.DeploymentOptions;
@@ -26,7 +26,7 @@ public class VertxSpringbootDemoApplication {
     private static final Logger logger = LoggerFactory.getLogger(VertxSpringbootDemoApplication.class);
 
     @Autowired
-    SpringVerticleFactory verticleFactory;
+    private SpringVerticleFactory verticleFactory;
 
     /**
      * The Vert.x worker pool size, configured in the {@code application.properties} file.
@@ -48,17 +48,17 @@ public class VertxSpringbootDemoApplication {
 
     @EventListener
     public void deployVerticles(ApplicationReadyEvent event) {
-        Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(workerPoolSize));
+        Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(workerPoolSize).setMaxEventLoopExecuteTime(Long.MAX_VALUE));
 
         // The verticle factory is registered manually because it is created by the Spring container
         vertx.registerVerticleFactory(verticleFactory);
 
         CountDownLatch deployLatch = new CountDownLatch(2);
         AtomicBoolean failed = new AtomicBoolean(false);
-        String restApiVerticleName = verticleFactory.prefix() + ":" + BookRestApi.class.getName();
+        String restApiVerticleName = verticleFactory.prefix() + ":" + RestApi.class.getName();
         vertx.deployVerticle(restApiVerticleName, ar -> {
             if (ar.failed()) {
-                logger.error("Failed to deploy verticle", ar.cause());
+                logger.error("Failed to deploy book verticle", ar.cause());
                 failed.compareAndSet(false, true);
             }
             deployLatch.countDown();
