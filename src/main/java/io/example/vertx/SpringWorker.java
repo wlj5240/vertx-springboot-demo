@@ -52,6 +52,7 @@ public class SpringWorker extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         ServiceBinder binder = new ServiceBinder(vertx);
         Future<Void> bookFuture = Future.future();
+        //注册服务代理
         binder.setAddress(BookAsyncService.ADDRESS).register(BookAsyncService.class, bookAsyncService)
                 .completionHandler(bookFuture);
         bookFuture.compose(x -> {

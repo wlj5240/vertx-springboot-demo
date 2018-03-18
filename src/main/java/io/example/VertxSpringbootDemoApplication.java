@@ -52,15 +52,18 @@ public class VertxSpringbootDemoApplication {
 
         // The verticle factory is registered manually because it is created by the Spring container
         vertx.registerVerticleFactory(verticleFactory);
-
+        //多线程计数
         CountDownLatch deployLatch = new CountDownLatch(2);
+        //多线程时使用该类可以提供原子性操作
         AtomicBoolean failed = new AtomicBoolean(false);
         String restApiVerticleName = verticleFactory.prefix() + ":" + RestApi.class.getName();
         vertx.deployVerticle(restApiVerticleName, ar -> {
             if (ar.failed()) {
                 logger.error("Failed to deploy book verticle", ar.cause());
+                //如果failed的值是false则置为true
                 failed.compareAndSet(false, true);
             }
+            //发布成功计数减1
             deployLatch.countDown();
         });
 
@@ -73,12 +76,15 @@ public class VertxSpringbootDemoApplication {
         vertx.deployVerticle(workerVerticleName, workerDeploymentOptions, ar -> {
             if (ar.failed()) {
                 logger.error("Failed to deploy verticle", ar.cause());
+                //如果failed的值是false则置为true
                 failed.compareAndSet(false, true);
             }
+            //发布成功计数减1
             deployLatch.countDown();
         });
 
         try {
+            //如果10秒还未发布成功则超时，抛出异常
             if (!deployLatch.await(10, SECONDS)) {
                 throw new RuntimeException("Timeout waiting for verticle deployments");
             } else if (failed.get()) {

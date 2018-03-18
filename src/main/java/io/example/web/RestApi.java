@@ -61,7 +61,7 @@ public class RestApi extends AbstractVerticle {
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080, listen -> {
             if (listen.succeeded()) {
-                logger.info("BookRestApi started");
+                logger.info("RestApi started");
                 startFuture.complete();
             } else {
                 startFuture.fail(listen.cause());

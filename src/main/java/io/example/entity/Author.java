@@ -3,9 +3,7 @@ package io.example.entity;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by XHD on 2018/3/15.
@@ -20,11 +18,10 @@ public class Author {
 
     private String name;
 
-    protected Author() {
-    }
+//    @OneToOne(mappedBy = "author", cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+//    private Book book;
 
-    public Author(String name) {
-        this.name = name;
+    protected Author() {
     }
 
     public Author(JsonObject jsonObject) {
@@ -39,6 +36,7 @@ public class Author {
         this.id = id;
     }
 
+
     public String getName() {
         return name;
     }
@@ -46,6 +44,7 @@ public class Author {
     public void setName(String name) {
         this.name = name;
     }
+
 
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
